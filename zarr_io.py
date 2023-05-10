@@ -1,6 +1,4 @@
 import tensorstore as ts 
-import zarr
-from ome_zarr import writer
 
 def open_zarr(bucket: str, path: str):
     return ts.open({
