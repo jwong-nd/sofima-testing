@@ -15,6 +15,13 @@ QUERY_R_OVERLAP = 25
 SEARCH_OVERLAP = 300  # Boundary - overlap = 'starting line' in search tile
 SEARCH_R_ORTHO = 50
 
+# Increasing the Query size:
+QUERY_R_ORTHO = 50
+QUERY_OVERLAP_OFFSET = 0  # Overlap = 'starting line' in neighboring tile
+QUERY_R_OVERLAP = 50
+
+SEARCH_OVERLAP = 300  # Boundary - overlap = 'starting line' in search tile
+SEARCH_R_ORTHO = 50
 
 @ft.partial(jax.jit)
 def _estimate_relative_offset_zyx(base, kernel
@@ -125,6 +132,6 @@ def compute_coarse_offsets(yx_shape: tuple[int, int],
             conn_y[:, 0, y, x] = _estimate_v_offset_zyx(top_tile, bot_tile)
             gc.collect() 
 
-            # print(f'Top: ({x}, {y}), Bot: ({x}, {y + 1})', conn_y[:, 0, y, x])
+            print(f'Top: ({x}, {y}), Bot: ({x}, {y + 1})', conn_y[:, 0, y, x])
 
     return conn_x, conn_y
