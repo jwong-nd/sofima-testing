@@ -2,14 +2,23 @@ import tensorstore as ts
 
 def open_zarr(bucket: str, path: str):
     return ts.open({
-    'driver': 'zarr',
-    'kvstore': {
-        'driver': 'gcs',
-        'bucket': bucket,
-    },
-    'path': path,
+        'driver': 'zarr',
+        'kvstore': {
+            'driver': 'gcs',
+            'bucket': bucket,
+        },
+        'path': path,
     }).result()
 
+
+def open_zarr_s3(bucket: str, path: str): 
+    return ts.open({
+        'driver': 'zarr',
+        'kvstore': {
+            'driver': 'http',
+            'base_url': f'https://{bucket}.s3.us-west-2.amazonaws.com/{path}',
+        },
+    }).result()
 
 # Metadata copied from original input zarr except uint16 -> uint8
 # def write_zarr(bucket: str, shape: list, path: str = 'processed.zarr'): 

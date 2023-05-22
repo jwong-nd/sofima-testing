@@ -88,50 +88,42 @@ def _estimate_v_offset_zyx(top_tile: ts.TensorStore, bot_tile: ts.TensorStore
     return pc_init_zyx + pc_zyx
 
 
-def compute_coarse_offsets(yx_shape: tuple[int, int],
-                           tile_map: dict[tuple[int, int], int], 
+def compute_coarse_offsets(tile_layout: np.ndarray, 
                            tile_volumes: list[ts.TensorStore]
                            ) -> tuple[np.ndarray, np.ndarray]:
-    """Computes coarse offsets for every tile.
+    # Using numpy axis convention
+    layout_x, layout_y = tile_layout.shape
 
-    Args:
-    yx_shape: shape of the tile grid
-    tile_map: maps YX tile coordinates to tile IDs
-    """
+    # Output Containers, sofima uses cartesian convention
+    conn_x = np.full((3, 1, layout_x, layout_y), np.nan)
+    conn_y = np.full((3, 1, layout_x, layout_y), np.nan)
 
-    # Output Containers
-    conn_x = np.full((3, 1, yx_shape[0], yx_shape[1]), np.nan)
-    conn_y = np.full((3, 1, yx_shape[0], yx_shape[1]), np.nan)
+    # Row Pairs
+    for x in range(layout_x): 
+        for y in range(layout_y - 1):  # Stop one before the end 
+            left_id = tile_layout[x, y]
+            right_id = tile_layout[x, y + 1]
+            left_tile = tile_volumes[left_id]
+            right_tile = tile_volumes[right_id]
 
-    # Fill conn_x
-    for x in range(0, yx_shape[1] - 1):
-        for y in range(0, yx_shape[0]):
-            if not ((y, x) in tile_map and (y, x + 1) in tile_map):
-                continue
+            conn_x[:, 0, x, y] = _estimate_h_offset_zyx(left_tile, right_tile)
+            gc.collect()
 
-            left = tile_map[(y, x)]
-            left_tile = tile_volumes[left]
-            right = tile_map[(y, x + 1)]
-            right_tile = tile_volumes[right]
+            print(f'Left Id: {left_id}, Right Id: {right_id}')
+            print(f'Left: ({x}, {y}), Right: ({x}, {y + 1})', conn_x[:, 0, x, y])
 
-            conn_x[:, 0, y, x] = _estimate_h_offset_zyx(left_tile, right_tile)
-            gc.collect() 
+    # Column Pairs
+    for y in range(layout_y):
+        for x in range(layout_x - 1):
+            top_id = tile_layout[x, y]
+            bot_id = tile_layout[x + 1, y]
+            top_tile = tile_volumes[top_id]
+            bot_tile = tile_volumes[bot_id]
 
-            # print(f'Left: ({x}, {y}), Right: ({x + 1}, {y})', conn_x[:, 0, y, x])
-
-    # Fill conn_y
-    for y in range(0, yx_shape[0] - 1):
-        for x in range(0, yx_shape[1]):
-            if not ((y, x) in tile_map and (y + 1, x) in tile_map):
-                continue
-
-            top = tile_map[(y, x)]
-            top_tile = tile_volumes[top]
-            bot = tile_map[(y + 1, x)]
-            bot_tile = tile_volumes[bot]
-            conn_y[:, 0, y, x] = _estimate_v_offset_zyx(top_tile, bot_tile)
-            gc.collect() 
-
-            print(f'Top: ({x}, {y}), Bot: ({x}, {y + 1})', conn_y[:, 0, y, x])
+            conn_y[:, 0, x, y] = _estimate_v_offset_zyx(top_tile, bot_tile)
+            gc.collect()
+            
+            print(f'Top Id: {top_id}, Bottom Id: {bot_id}')
+            print(f'Top: ({x}, {y}), Bot: ({x + 1}, {y})', conn_y[:, 0, x, y])
 
     return conn_x, conn_y
