@@ -15,12 +15,20 @@ QUERY_R_OVERLAP = 25
 SEARCH_OVERLAP = 300  # Boundary - overlap = 'starting line' in search tile
 SEARCH_R_ORTHO = 50
 
-# Increasing the Query size:
+# Increasing the Query size (Dispim):
 QUERY_R_ORTHO = 50
 QUERY_OVERLAP_OFFSET = 0  # Overlap = 'starting line' in neighboring tile
 QUERY_R_OVERLAP = 50
 
 SEARCH_OVERLAP = 300  # Boundary - overlap = 'starting line' in search tile
+SEARCH_R_ORTHO = 50
+
+# Decreased Search Overlap for Exaspim Phase Correlation: 
+QUERY_R_ORTHO = 50
+QUERY_OVERLAP_OFFSET = 0  # Overlap = 'starting line' in neighboring tile
+QUERY_R_OVERLAP = 50
+
+SEARCH_OVERLAP = 200  # Boundary - overlap = 'starting line' in search tile
 SEARCH_R_ORTHO = 50
 
 @ft.partial(jax.jit)
