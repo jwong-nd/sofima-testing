@@ -23,12 +23,12 @@ QUERY_R_OVERLAP = 50
 SEARCH_OVERLAP = 300  # Boundary - overlap = 'starting line' in search tile
 SEARCH_R_ORTHO = 50
 
-# Decreased Search Overlap for Exaspim Phase Correlation: 
-QUERY_R_ORTHO = 50
+# Exaspim Parameters: 
+QUERY_R_ORTHO = 100
 QUERY_OVERLAP_OFFSET = 0  # Overlap = 'starting line' in neighboring tile
-QUERY_R_OVERLAP = 50
+QUERY_R_OVERLAP = 100
 
-SEARCH_OVERLAP = 200  # Boundary - overlap = 'starting line' in search tile
+SEARCH_OVERLAP = 400  # Boundary - overlap = 'starting line' in search tile
 SEARCH_R_ORTHO = 50
 
 @ft.partial(jax.jit)
@@ -45,7 +45,6 @@ def _estimate_relative_offset_zyx(base, kernel
     # r returns a list, relative offset is here
     relative_offset_xyz = r[0][0:3]
     return [relative_offset_xyz[2], relative_offset_xyz[1], relative_offset_xyz[0]]
-
 
 def _estimate_h_offset_zyx(left_tile: ts.TensorStore, right_tile: ts.TensorStore
                            ) -> tuple[list[float], float]:
@@ -64,7 +63,7 @@ def _estimate_h_offset_zyx(left_tile: ts.TensorStore, right_tile: ts.TensorStore
                        mz-QUERY_R_ORTHO:mz+QUERY_R_ORTHO].read().result().T
 
     start_zyx = np.array(left.shape) // 2 - np.array(right.shape) // 2
-    pc_init_zyx = np.array([tile_size_xyz[2] - SEARCH_OVERLAP + start_zyx[2], 0, 0])
+    pc_init_zyx = np.array([0, 0, tile_size_xyz[0] - SEARCH_OVERLAP + start_zyx[2]])
     pc_zyx = np.array(_estimate_relative_offset_zyx(left, right))
 
     return pc_init_zyx + pc_zyx
