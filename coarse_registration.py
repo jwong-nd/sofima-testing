@@ -7,29 +7,45 @@ import tensorstore as ts
 from sofima import flow_field
 
 
-# Global/Data-Defined Variables for defining bounds of 'Search' and 'Query' volumes for cross correlation. 
-QUERY_R_ORTHO = 25
-QUERY_OVERLAP_OFFSET = 0  # Overlap = 'starting line' in neighboring tile
-QUERY_R_OVERLAP = 25
+# Small Query Size (Dispim)
+# QUERY_R_ORTHO = 25
+# QUERY_OVERLAP_OFFSET = 0  # Overlap = 'starting line' in neighboring tile
+# QUERY_R_OVERLAP = 25
 
-SEARCH_OVERLAP = 300  # Boundary - overlap = 'starting line' in search tile
-SEARCH_R_ORTHO = 50
+# SEARCH_OVERLAP = 300  # Boundary - overlap = 'starting line' in search tile
+# SEARCH_R_ORTHO = 50
 
-# Increasing the Query size (Dispim):
-QUERY_R_ORTHO = 50
-QUERY_OVERLAP_OFFSET = 0  # Overlap = 'starting line' in neighboring tile
-QUERY_R_OVERLAP = 50
+# Normal Query Size (Dispim):
+# QUERY_R_ORTHO = 50
+# QUERY_OVERLAP_OFFSET = 0  # Overlap = 'starting line' in neighboring tile
+# QUERY_R_OVERLAP = 50
 
-SEARCH_OVERLAP = 300  # Boundary - overlap = 'starting line' in search tile
-SEARCH_R_ORTHO = 50
+# SEARCH_OVERLAP = 300  # Boundary - overlap = 'starting line' in search tile
+# SEARCH_R_ORTHO = 50
+
+# Large Rect Query size (Dispim):
+# QUERY_R_ORTHO = 100
+# QUERY_OVERLAP_OFFSET = 0  # Overlap = 'starting line' in neighboring tile
+# QUERY_R_OVERLAP = 100
+
+# SEARCH_OVERLAP = 300  # Boundary - overlap = 'starting line' in search tile
+# SEARCH_R_ORTHO = 100
+
+# Large Query size (Dispim):
+# QUERY_R_ORTHO = 150
+# QUERY_OVERLAP_OFFSET = 0  # Overlap = 'starting line' in neighboring tile
+# QUERY_R_OVERLAP = 150
+
+# SEARCH_OVERLAP = 300  # Boundary - overlap = 'starting line' in search tile
+# SEARCH_R_ORTHO = 100
 
 # Exaspim Parameters: 
-QUERY_R_ORTHO = 100
-QUERY_OVERLAP_OFFSET = 0  # Overlap = 'starting line' in neighboring tile
-QUERY_R_OVERLAP = 100
+# QUERY_R_ORTHO = 100
+# QUERY_OVERLAP_OFFSET = 0  # Overlap = 'starting line' in neighboring tile
+# QUERY_R_OVERLAP = 100
 
-SEARCH_OVERLAP = 400  # Boundary - overlap = 'starting line' in search tile
-SEARCH_R_ORTHO = 50
+# SEARCH_OVERLAP = 400  # Boundary - overlap = 'starting line' in search tile
+# SEARCH_R_ORTHO = 50
 
 @ft.partial(jax.jit)
 def _estimate_relative_offset_zyx(base, kernel
