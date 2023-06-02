@@ -16,14 +16,14 @@ from sofima import flow_field
 # SEARCH_R_ORTHO = 50
 
 # Normal Query Size (Dispim):
-# QUERY_R_ORTHO = 50
-# QUERY_OVERLAP_OFFSET = 0  # Overlap = 'starting line' in neighboring tile
-# QUERY_R_OVERLAP = 50
+QUERY_R_ORTHO = 50
+QUERY_OVERLAP_OFFSET = 0  # Overlap = 'starting line' in neighboring tile
+QUERY_R_OVERLAP = 50
 
-# SEARCH_OVERLAP = 300  # Boundary - overlap = 'starting line' in search tile
-# SEARCH_R_ORTHO = 50
+SEARCH_OVERLAP = 300  # Boundary - overlap = 'starting line' in search tile
+SEARCH_R_ORTHO = 50
 
-# Large Rect Query size (Dispim):
+# Large Query size (Dispim):
 # QUERY_R_ORTHO = 100
 # QUERY_OVERLAP_OFFSET = 0  # Overlap = 'starting line' in neighboring tile
 # QUERY_R_OVERLAP = 100
@@ -31,10 +31,18 @@ from sofima import flow_field
 # SEARCH_OVERLAP = 300  # Boundary - overlap = 'starting line' in search tile
 # SEARCH_R_ORTHO = 100
 
-# Large Query size (Dispim):
-# QUERY_R_ORTHO = 150
-# QUERY_OVERLAP_OFFSET = 0  # Overlap = 'starting line' in neighboring tile
-# QUERY_R_OVERLAP = 150
+# Custom Parameters for hole dataset:
+# QUERY_R_ORTHO = 100
+# QUERY_OVERLAP_OFFSET = 400  # Overlap = 'starting line' in neighboring tile
+# QUERY_R_OVERLAP = 100
+
+# SEARCH_OVERLAP = 300  # Boundary - overlap = 'starting line' in search tile
+# SEARCH_R_ORTHO = 100
+
+# Custom Parameters for wave dataset:
+# QUERY_R_ORTHO = 120
+# QUERY_OVERLAP_OFFSET = 400  # Overlap = 'starting line' in neighboring tile
+# QUERY_R_OVERLAP = 120
 
 # SEARCH_OVERLAP = 300  # Boundary - overlap = 'starting line' in search tile
 # SEARCH_R_ORTHO = 100
@@ -85,12 +93,18 @@ def _estimate_h_offset_zyx(left_tile: ts.TensorStore, right_tile: ts.TensorStore
     return pc_init_zyx + pc_zyx
 
 
-def _estimate_v_offset_zyx(top_tile: ts.TensorStore, bot_tile: ts.TensorStore
+def _estimate_v_offset_zyx(top_tile: ts.TensorStore, bot_tile: ts.TensorStore,
+                           sample_left = False, 
                           ) -> tuple[list[float], float]:
     tile_size_xyz = top_tile.shape
     mz = tile_size_xyz[2] // 2
     mx = tile_size_xyz[0] // 2
     
+    if sample_left: 
+        mx = mx // 2
+    # if sample_right:
+    #     mx = mx + (mx // 2)
+
     top = top_tile[mx-SEARCH_R_ORTHO:mx+SEARCH_R_ORTHO, 
                    tile_size_xyz[1]-SEARCH_OVERLAP:, 
                    mz-SEARCH_R_ORTHO:mz+SEARCH_R_ORTHO].read().result().T  
@@ -111,9 +125,13 @@ def _estimate_v_offset_zyx(top_tile: ts.TensorStore, bot_tile: ts.TensorStore
     return pc_init_zyx + pc_zyx
 
 
+# Tweaking is a bit of a hassle-- 
+# Intermediate step to auto-tweaking, define patches 
+# based on image size.
+
 def compute_coarse_offsets(tile_layout: np.ndarray, 
-                           tile_volumes: list[ts.TensorStore]
-                           ) -> tuple[np.ndarray, np.ndarray]:
+                           tile_volumes: list[ts.TensorStore],
+                           sample_left = False) -> tuple[np.ndarray, np.ndarray]:
     # Using numpy axis convention
     layout_x, layout_y = tile_layout.shape
 
@@ -143,7 +161,7 @@ def compute_coarse_offsets(tile_layout: np.ndarray,
             top_tile = tile_volumes[top_id]
             bot_tile = tile_volumes[bot_id]
 
-            conn_y[:, 0, x, y] = _estimate_v_offset_zyx(top_tile, bot_tile)
+            conn_y[:, 0, x, y] = _estimate_v_offset_zyx(top_tile, bot_tile, sample_left)
             gc.collect()
             
             print(f'Top Id: {top_id}, Bottom Id: {bot_id}')
