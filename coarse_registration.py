@@ -92,6 +92,9 @@ def _estimate_h_offset_zyx(left_tile: ts.TensorStore, right_tile: ts.TensorStore
 
     return pc_init_zyx + pc_zyx
 
+# Okay, let's use peak sharpness. 
+# Its a ratio of the height to the base of the peak, where if base is ~equivalent for every peak 
+# we are comparing apples to apples. Greater height is better, but need to define height relative to a base. 
 
 def _estimate_v_offset_zyx(top_tile: ts.TensorStore, bot_tile: ts.TensorStore,
                            sample_left = False, 
