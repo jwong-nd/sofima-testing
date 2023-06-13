@@ -1,3 +1,7 @@
+"""
+'Fork' of the sofima stitch_elastic. 
+"""
+
 import numpy as np
 
 from typing import Any, Mapping, Sequence, Union
@@ -8,9 +12,8 @@ from connectomics.common import bounding_box
 # this splices the tensorstore, then .result() under numpy syntax.
 class SyncAdapter:
   """Makes it possible to use a TensorStore objects as a numpy array."""
-  def __init__(self, tstore, i):
+  def __init__(self, tstore):
     self.tstore = tstore
-    self.i = i
 
   def __getitem__(self, ind):
     print(ind)

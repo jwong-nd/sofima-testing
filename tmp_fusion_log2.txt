@@ -1,0 +1,335 @@
+(slice(0, 541, None), slice(0, 536, None), slice(0, 532, None))
+(slice(0, 541, None), slice(0, 272, None), slice(0, 532, None))
+box 0: 60.13 render  0.49 write
+(slice(0, 541, None), slice(0, 536, None), slice(3, 572, None))
+(slice(0, 541, None), slice(0, 272, None), slice(4, 572, None))
+box 1: 38.17 render  0.66 write
+(slice(0, 541, None), slice(471, 576, None), slice(0, 532, None))
+(slice(0, 542, None), slice(187, 571, None), slice(0, 534, None))
+(slice(0, 543, None), slice(0, 507, None), slice(0, 535, None))
+(slice(0, 543, None), slice(0, 222, None), slice(0, 535, None))
+box 2: 71.56 render  0.63 write
+(slice(0, 541, None), slice(471, 576, None), slice(5, 572, None))
+(slice(0, 542, None), slice(187, 571, None), slice(5, 574, None))
+(slice(0, 543, None), slice(0, 507, None), slice(6, 575, None))
+(slice(0, 543, None), slice(0, 222, None), slice(7, 575, None))
+box 3: 50.19 render  0.69 write
+(slice(0, 543, None), slice(423, 567, None), slice(0, 535, None))
+(slice(0, 543, None), slice(139, 576, None), slice(0, 536, None))
+(slice(0, 543, None), slice(0, 456, None), slice(0, 536, None))
+(slice(0, 542, None), slice(0, 172, None), slice(0, 536, None))
+box 4: 75.92 render  0.43 write
+(slice(0, 543, None), slice(423, 567, None), slice(7, 575, None))
+(slice(0, 543, None), slice(139, 576, None), slice(7, 576, None))
+(slice(0, 543, None), slice(0, 456, None), slice(9, 576, None))
+(slice(0, 542, None), slice(0, 172, None), slice(9, 576, None))
+box 5: 56.97 render  0.78 write
+(slice(0, 542, None), slice(374, 576, None), slice(0, 536, None))
+(slice(0, 542, None), slice(90, 572, None), slice(0, 536, None))
+(slice(0, 542, None), slice(0, 408, None), slice(0, 536, None))
+(slice(0, 541, None), slice(0, 124, None), slice(0, 536, None))
+box 6: 76.76 render  0.46 write
+(slice(0, 542, None), slice(374, 576, None), slice(9, 576, None))
+(slice(0, 542, None), slice(90, 572, None), slice(9, 576, None))
+(slice(0, 542, None), slice(0, 408, None), slice(10, 576, None))
+(slice(0, 541, None), slice(0, 124, None), slice(9, 576, None))
+box 7: 55.08 render  0.67 write
+(slice(0, 540, None), slice(324, 568, None), slice(0, 536, None))
+(slice(0, 540, None), slice(20, 564, None), slice(0, 535, None))
+(slice(0, 539, None), slice(0, 360, None), slice(0, 535, None))
+box 8: 56.55 render  0.54 write
+(slice(0, 540, None), slice(324, 568, None), slice(10, 576, None))
+(slice(0, 540, None), slice(20, 564, None), slice(9, 575, None))
+(slice(0, 539, None), slice(0, 360, None), slice(9, 575, None))
+box 9: 48.48 render  0.68 write
+(slice(0, 540, None), slice(344, 568, None), slice(0, 535, None))
+(slice(0, 540, None), slice(59, 564, None), slice(0, 535, None))
+(slice(0, 539, None), slice(0, 380, None), slice(0, 535, None))
+box 10: 46.42 render  0.73 write
+(slice(0, 540, None), slice(344, 568, None), slice(10, 575, None))
+(slice(0, 540, None), slice(59, 564, None), slice(9, 575, None))
+(slice(0, 539, None), slice(0, 380, None), slice(9, 575, None))
+box 11: 46.24 render  0.88 write
+(slice(452, 1056, None), slice(0, 533, None), slice(0, 539, None))
+(slice(453, 1043, None), slice(0, 270, None), slice(0, 539, None))
+box 12: 35.97 render  0.47 write
+(slice(452, 1041, None), slice(0, 533, None), slice(8, 576, None))
+(slice(453, 1042, None), slice(0, 270, None), slice(9, 576, None))
+box 13: 38.09 render  0.71 write
+(slice(454, 1043, None), slice(470, 573, None), slice(0, 539, None))
+(slice(454, 1044, None), slice(186, 570, None), slice(0, 539, None))
+(slice(454, 1043, None), slice(0, 540, None), slice(0, 540, None))
+(slice(456, 1043, None), slice(0, 221, None), slice(0, 540, None))
+box 14: 48.56 render  0.56 write
+(slice(454, 1041, None), slice(470, 573, None), slice(10, 576, None))
+(slice(454, 1043, None), slice(186, 570, None), slice(10, 576, None))
+(slice(454, 1043, None), slice(0, 540, None), slice(11, 576, None))
+(slice(456, 1043, None), slice(0, 221, None), slice(12, 576, None))
+box 15: 49.56 render  0.70 write
+(slice(456, 1043, None), slice(422, 570, None), slice(0, 540, None))
+(slice(456, 1043, None), slice(138, 576, None), slice(0, 541, None))
+(slice(456, 1044, None), slice(0, 458, None), slice(0, 541, None))
+(slice(456, 1042, None), slice(0, 173, None), slice(0, 541, None))
+box 16: 55.41 render  0.58 write
+(slice(456, 1043, None), slice(422, 570, None), slice(12, 576, None))
+(slice(456, 1043, None), slice(138, 576, None), slice(12, 576, None))
+(slice(456, 1044, None), slice(0, 457, None), slice(10, 576, None))
+(slice(456, 1042, None), slice(0, 173, None), slice(14, 576, None))
+box 17: 54.72 render  0.65 write
+(slice(456, 1042, None), slice(375, 576, None), slice(0, 541, None))
+(slice(455, 1042, None), slice(91, 574, None), slice(0, 541, None))
+(slice(454, 1041, None), slice(0, 411, None), slice(0, 541, None))
+(slice(454, 1040, None), slice(0, 127, None), slice(0, 540, None))
+box 18: 57.15 render  0.48 write
+(slice(456, 1042, None), slice(375, 576, None), slice(14, 576, None))
+(slice(455, 1042, None), slice(91, 574, None), slice(14, 576, None))
+(slice(454, 1041, None), slice(0, 411, None), slice(13, 576, None))
+(slice(454, 1040, None), slice(0, 127, None), slice(14, 576, None))
+box 19: 53.66 render  0.96 write
+(slice(454, 1040, None), slice(326, 571, None), slice(0, 540, None))
+(slice(452, 1040, None), slice(42, 567, None), slice(0, 540, None))
+(slice(451, 1039, None), slice(0, 363, None), slice(0, 540, None))
+box 20: 47.55 render  0.44 write
+(slice(454, 1040, None), slice(326, 571, None), slice(13, 576, None))
+(slice(452, 1040, None), slice(42, 567, None), slice(13, 576, None))
+(slice(451, 1039, None), slice(0, 363, None), slice(13, 576, None))
+box 21: 48.58 render  0.66 write
+(slice(454, 1040, None), slice(346, 571, None), slice(0, 540, None))
+(slice(452, 1040, None), slice(62, 567, None), slice(0, 540, None))
+(slice(451, 1039, None), slice(0, 383, None), slice(0, 540, None))
+box 22: 45.80 render  0.60 write
+(slice(454, 1040, None), slice(346, 571, None), slice(13, 576, None))
+(slice(452, 1040, None), slice(62, 567, None), slice(13, 576, None))
+(slice(451, 1039, None), slice(0, 383, None), slice(13, 576, None))
+box 23: 47.99 render  0.90 write
+(slice(971, 1567, None), slice(0, 533, None), slice(0, 541, None))
+(slice(973, 1565, None), slice(0, 269, None), slice(0, 541, None))
+box 24: 37.05 render  0.71 write
+(slice(971, 1567, None), slice(0, 533, None), slice(3, 576, None))
+(slice(973, 1565, None), slice(0, 269, None), slice(16, 576, None))
+box 25: 37.31 render  0.65 write
+(slice(973, 1566, None), slice(467, 573, None), slice(0, 541, None))
+(slice(973, 1566, None), slice(184, 570, None), slice(0, 541, None))
+(slice(974, 1565, None), slice(0, 505, None), slice(0, 541, None))
+(slice(975, 1563, None), slice(0, 222, None), slice(0, 541, None))
+box 26: 49.10 render  0.47 write
+(slice(973, 1565, None), slice(467, 573, None), slice(17, 576, None))
+(slice(973, 1566, None), slice(184, 570, None), slice(17, 576, None))
+(slice(974, 1565, None), slice(0, 505, None), slice(17, 576, None))
+(slice(975, 1563, None), slice(0, 222, None), slice(18, 576, None))
+box 27: 48.21 render  0.60 write
+(slice(976, 1564, None), slice(420, 566, None), slice(0, 541, None))
+(slice(976, 1563, None), slice(138, 576, None), slice(0, 546, None))
+(slice(976, 1563, None), slice(0, 460, None), slice(0, 541, None))
+(slice(976, 1560, None), slice(0, 176, None), slice(0, 541, None))
+box 28: 56.06 render  0.69 write
+(slice(976, 1564, None), slice(420, 566, None), slice(19, 576, None))
+(slice(976, 1563, None), slice(138, 576, None), slice(19, 576, None))
+(slice(976, 1563, None), slice(0, 460, None), slice(12, 576, None))
+(slice(976, 1560, None), slice(0, 176, None), slice(19, 576, None))
+box 29: 53.92 render  0.66 write
+(slice(976, 1560, None), slice(375, 576, None), slice(0, 541, None))
+(slice(975, 1560, None), slice(92, 576, None), slice(0, 541, None))
+(slice(974, 1560, None), slice(0, 413, None), slice(0, 541, None))
+(slice(974, 1559, None), slice(0, 130, None), slice(0, 541, None))
+box 30: 55.68 render  0.49 write
+(slice(976, 1560, None), slice(375, 576, None), slice(19, 576, None))
+(slice(975, 1560, None), slice(92, 576, None), slice(19, 576, None))
+(slice(974, 1560, None), slice(0, 413, None), slice(18, 576, None))
+(slice(974, 1559, None), slice(0, 130, None), slice(18, 576, None))
+box 31: 55.30 render  0.68 write
+(slice(974, 1559, None), slice(328, 573, None), slice(0, 541, None))
+(slice(972, 1559, None), slice(44, 570, None), slice(0, 541, None))
+(slice(972, 1558, None), slice(0, 366, None), slice(0, 541, None))
+box 32: 46.49 render  0.42 write
+(slice(974, 1559, None), slice(328, 573, None), slice(18, 576, None))
+(slice(972, 1559, None), slice(44, 570, None), slice(18, 576, None))
+(slice(972, 1558, None), slice(0, 366, None), slice(18, 576, None))
+box 33: 46.77 render  0.82 write
+(slice(974, 1559, None), slice(348, 573, None), slice(0, 541, None))
+(slice(972, 1559, None), slice(64, 570, None), slice(0, 541, None))
+(slice(972, 1558, None), slice(0, 386, None), slice(0, 541, None))
+box 34: 46.11 render  0.60 write
+(slice(974, 1559, None), slice(348, 573, None), slice(18, 576, None))
+(slice(972, 1559, None), slice(65, 570, None), slice(18, 576, None))
+(slice(972, 1558, None), slice(0, 386, None), slice(18, 576, None))
+box 35: 45.33 render  0.88 write
+(slice(1469, 2088, None), slice(0, 537, None), slice(0, 541, None))
+(slice(1468, 2082, None), slice(0, 273, None), slice(0, 541, None))
+box 36: 35.47 render  0.45 write
+(slice(1469, 2088, None), slice(0, 537, None), slice(7, 576, None))
+(slice(1468, 2082, None), slice(0, 273, None), slice(24, 576, None))
+box 37: 34.88 render  0.72 write
+(slice(1471, 2081, None), slice(466, 576, None), slice(0, 541, None))
+(slice(1471, 2078, None), slice(181, 572, None), slice(0, 541, None))
+(slice(1474, 2069, None), slice(0, 508, None), slice(0, 541, None))
+(slice(1476, 2064, None), slice(0, 224, None), slice(0, 541, None))
+box 38: 49.48 render  0.72 write
+(slice(1471, 2081, None), slice(466, 576, None), slice(25, 576, None))
+(slice(1471, 2078, None), slice(181, 572, None), slice(25, 576, None))
+(slice(1474, 2069, None), slice(0, 508, None), slice(25, 576, None))
+(slice(1476, 2064, None), slice(0, 224, None), slice(24, 576, None))
+box 39: 48.59 render  0.71 write
+(slice(1476, 2064, None), slice(420, 568, None), slice(0, 541, None))
+(slice(1476, 2064, None), slice(138, 576, None), slice(0, 547, None))
+(slice(1475, 2063, None), slice(0, 462, None), slice(0, 541, None))
+(slice(1475, 2065, None), slice(0, 179, None), slice(0, 541, None))
+box 40: 53.79 render  0.38 write
+(slice(1476, 2064, None), slice(420, 568, None), slice(25, 576, None))
+(slice(1476, 2064, None), slice(138, 576, None), slice(24, 576, None))
+(slice(1475, 2063, None), slice(0, 462, None), slice(21, 576, None))
+(slice(1475, 2065, None), slice(0, 179, None), slice(11, 576, None))
+box 41: 55.45 render  0.71 write
+(slice(1475, 2061, None), slice(376, 576, None), slice(0, 551, None))
+(slice(1474, 2061, None), slice(93, 576, None), slice(0, 541, None))
+(slice(1474, 2060, None), slice(0, 416, None), slice(0, 541, None))
+(slice(1474, 2058, None), slice(0, 132, None), slice(0, 541, None))
+box 42: 53.96 render  0.47 write
+(slice(1475, 2061, None), slice(376, 576, None), slice(23, 576, None))
+(slice(1474, 2061, None), slice(93, 576, None), slice(22, 576, None))
+(slice(1474, 2060, None), slice(0, 416, None), slice(22, 576, None))
+(slice(1474, 2058, None), slice(0, 132, None), slice(22, 576, None))
+box 43: 55.93 render  0.68 write
+(slice(1474, 2058, None), slice(330, 576, None), slice(0, 541, None))
+(slice(1473, 2058, None), slice(46, 572, None), slice(0, 541, None))
+(slice(1473, 2057, None), slice(0, 368, None), slice(0, 541, None))
+box 44: 45.80 render  0.42 write
+(slice(1474, 2058, None), slice(330, 576, None), slice(22, 576, None))
+(slice(1473, 2058, None), slice(46, 572, None), slice(21, 576, None))
+(slice(1473, 2057, None), slice(0, 368, None), slice(21, 576, None))
+box 45: 47.03 render  0.76 write
+(slice(1474, 2058, None), slice(350, 576, None), slice(0, 541, None))
+(slice(1473, 2058, None), slice(66, 572, None), slice(0, 541, None))
+(slice(1472, 2057, None), slice(0, 388, None), slice(0, 541, None))
+box 46: 47.69 render  0.75 write
+(slice(1474, 2058, None), slice(350, 576, None), slice(22, 576, None))
+(slice(1473, 2058, None), slice(66, 572, None), slice(21, 576, None))
+(slice(1472, 2057, None), slice(0, 388, None), slice(21, 576, None))
+box 47: 45.03 render  1.33 write
+(slice(2002, 2602, None), slice(0, 541, None), slice(0, 541, None))
+(slice(2004, 2598, None), slice(0, 278, None), slice(0, 541, None))
+box 48: 35.68 render  0.43 write
+(slice(2003, 2602, None), slice(0, 541, None), slice(13, 576, None))
+(slice(2004, 2598, None), slice(0, 278, None), slice(5, 576, None))
+box 49: 36.88 render  0.67 write
+(slice(2002, 2596, None), slice(469, 576, None), slice(0, 541, None))
+(slice(2000, 2595, None), slice(186, 576, None), slice(0, 541, None))
+(slice(1999, 2593, None), slice(0, 514, None), slice(0, 541, None))
+(slice(1998, 2590, None), slice(0, 230, None), slice(0, 541, None))
+box 50: 47.83 render  0.46 write
+(slice(2003, 2596, None), slice(469, 576, None), slice(22, 576, None))
+(slice(2001, 2595, None), slice(186, 576, None), slice(23, 576, None))
+(slice(1999, 2593, None), slice(0, 514, None), slice(24, 576, None))
+(slice(1998, 2590, None), slice(0, 230, None), slice(27, 576, None))
+box 51: 48.79 render  0.82 write
+(slice(1998, 2589, None), slice(423, 574, None), slice(0, 541, None))
+(slice(1994, 2591, None), slice(140, 576, None), slice(0, 541, None))
+(slice(1992, 2602, None), slice(0, 466, None), slice(0, 541, None))
+(slice(1992, 2598, None), slice(0, 182, None), slice(0, 541, None))
+box 52: 53.47 render  0.49 write
+(slice(1998, 2589, None), slice(423, 574, None), slice(27, 576, None))
+(slice(1994, 2591, None), slice(140, 576, None), slice(28, 576, None))
+(slice(1992, 2602, None), slice(0, 466, None), slice(27, 576, None))
+(slice(1992, 2598, None), slice(0, 182, None), slice(12, 576, None))
+box 53: 54.26 render  0.90 write
+(slice(1991, 2602, None), slice(378, 576, None), slice(0, 552, None))
+(slice(1992, 2597, None), slice(94, 576, None), slice(0, 547, None))
+(slice(1994, 2586, None), slice(0, 419, None), slice(0, 541, None))
+(slice(1995, 2581, None), slice(0, 135, None), slice(0, 541, None))
+box 54: 56.47 render  0.53 write
+(slice(1991, 2602, None), slice(378, 576, None), slice(27, 576, None))
+(slice(1992, 2597, None), slice(94, 576, None), slice(26, 576, None))
+(slice(1994, 2586, None), slice(0, 419, None), slice(25, 576, None))
+(slice(1995, 2581, None), slice(0, 135, None), slice(24, 576, None))
+box 55: 54.54 render  0.76 write
+(slice(1995, 2581, None), slice(330, 576, None), slice(0, 541, None))
+(slice(1994, 2580, None), slice(47, 574, None), slice(0, 541, None))
+(slice(1994, 2578, None), slice(0, 370, None), slice(0, 541, None))
+box 56: 47.13 render  1.35 write
+(slice(1995, 2581, None), slice(331, 576, None), slice(24, 576, None))
+(slice(1994, 2580, None), slice(47, 574, None), slice(22, 576, None))
+(slice(1994, 2578, None), slice(0, 370, None), slice(21, 576, None))
+box 57: 46.26 render  0.64 write
+(slice(1995, 2580, None), slice(350, 576, None), slice(0, 541, None))
+(slice(1994, 2580, None), slice(67, 574, None), slice(0, 541, None))
+(slice(1994, 2578, None), slice(0, 390, None), slice(0, 541, None))
+box 58: 44.89 render  0.65 write
+(slice(1995, 2580, None), slice(351, 576, None), slice(24, 576, None))
+(slice(1994, 2580, None), slice(67, 574, None), slice(22, 576, None))
+(slice(1994, 2578, None), slice(0, 390, None), slice(21, 576, None))
+box 59: 47.30 render  0.94 write
+(slice(2525, 3121, None), slice(0, 546, None), slice(0, 541, None))
+(slice(2525, 3118, None), slice(0, 282, None), slice(0, 541, None))
+box 60: 36.48 render  0.52 write
+(slice(2526, 3121, None), slice(0, 546, None), slice(11, 576, None))
+(slice(2525, 3118, None), slice(0, 282, None), slice(9, 576, None))
+box 61: 36.48 render  1.11 write
+(slice(2525, 3116, None), slice(478, 576, None), slice(0, 541, None))
+(slice(2521, 3116, None), slice(194, 576, None), slice(0, 541, None))
+(slice(2519, 3115, None), slice(0, 518, None), slice(0, 541, None))
+(slice(2520, 3114, None), slice(0, 233, None), slice(0, 541, None))
+box 62: 49.87 render  0.68 write
+(slice(2526, 3116, None), slice(478, 576, None), slice(13, 576, None))
+(slice(2522, 3116, None), slice(194, 576, None), slice(14, 576, None))
+(slice(2519, 3115, None), slice(0, 518, None), slice(14, 576, None))
+(slice(2520, 3114, None), slice(0, 233, None), slice(16, 576, None))
+box 63: 49.75 render  0.79 write
+(slice(2519, 3113, None), slice(430, 576, None), slice(0, 541, None))
+(slice(2517, 3113, None), slice(146, 576, None), slice(0, 541, None))
+(slice(2509, 3114, None), slice(0, 469, None), slice(0, 541, None))
+(slice(2517, 3112, None), slice(0, 185, None), slice(0, 541, None))
+box 64: 55.71 render  0.59 write
+(slice(2519, 3113, None), slice(430, 576, None), slice(17, 576, None))
+(slice(2517, 3113, None), slice(146, 576, None), slice(17, 576, None))
+(slice(2509, 3114, None), slice(0, 469, None), slice(16, 576, None))
+(slice(2517, 3112, None), slice(0, 185, None), slice(18, 576, None))
+box 65: 53.96 render  0.69 write
+(slice(2506, 3111, None), slice(381, 576, None), slice(0, 541, None))
+(slice(2514, 3111, None), slice(95, 576, None), slice(0, 547, None))
+(slice(2514, 3108, None), slice(0, 421, None), slice(0, 541, None))
+(slice(2514, 3104, None), slice(0, 137, None), slice(0, 541, None))
+box 66: 59.49 render  0.44 write
+(slice(2506, 3111, None), slice(381, 576, None), slice(17, 576, None))
+(slice(2515, 3111, None), slice(96, 576, None), slice(18, 576, None))
+(slice(2514, 3108, None), slice(0, 421, None), slice(10, 576, None))
+(slice(2515, 3104, None), slice(0, 137, None), slice(17, 576, None))
+box 67: 54.68 render  0.66 write
+(slice(2513, 3104, None), slice(332, 576, None), slice(0, 541, None))
+(slice(2512, 3103, None), slice(49, 576, None), slice(0, 541, None))
+(slice(2512, 3101, None), slice(0, 373, None), slice(0, 541, None))
+box 68: 47.97 render  0.53 write
+(slice(2514, 3104, None), slice(332, 576, None), slice(17, 576, None))
+(slice(2512, 3103, None), slice(49, 576, None), slice(16, 576, None))
+(slice(2512, 3101, None), slice(0, 373, None), slice(15, 576, None))
+box 69: 46.15 render  0.70 write
+(slice(2513, 3103, None), slice(352, 576, None), slice(0, 541, None))
+(slice(2512, 3103, None), slice(69, 576, None), slice(0, 541, None))
+(slice(2511, 3101, None), slice(0, 393, None), slice(0, 541, None))
+box 70: 46.66 render  0.63 write
+(slice(2514, 3103, None), slice(352, 576, None), slice(17, 576, None))
+(slice(2512, 3103, None), slice(69, 576, None), slice(16, 576, None))
+(slice(2512, 3101, None), slice(0, 393, None), slice(15, 576, None))
+box 71: 46.55 render  0.91 write
+(slice(2986, 3550, None), slice(0, 549, None), slice(0, 537, None))
+(slice(2985, 3550, None), slice(0, 285, None), slice(0, 537, None))
+box 72: 36.52 render  0.69 write
+(slice(2986, 3550, None), slice(0, 549, None), slice(4, 576, None))
+(slice(2985, 3550, None), slice(0, 285, None), slice(5, 576, None))
+box 73: 34.79 render  0.75 write
+(slice(2984, 3550, None), slice(482, 576, None), slice(0, 537, None))
+(slice(2982, 3550, None), slice(198, 576, None), slice(0, 539, None))
+(slice(2980, 3550, None), slice(0, 520, None), slice(0, 540, None))
+(slice(2980, 3550, None), slice(0, 236, None), slice(0, 540, None))
+box 74: 48.45 render  0.62 write
+(slice(2984, 3550, None), slice(482, 576, None), slice(6, 576, None))
+(slice(2982, 3550, None), slice(198, 576, None), slice(6, 576, None))
+(slice(2980, 3550, None), slice(0, 520, None), slice(6, 576, None))
+(slice(2981, 3550, None), slice(0, 236, None), slice(8, 576, None))
+box 75: 49.56 render  0.72 write
+(slice(2980, 3550, None), slice(433, 576, None), slice(0, 540, None))
+(slice(2978, 3550, None), slice(149, 576, None), slice(0, 541, None))
+(slice(2978, 3550, None), slice(0, 472, None), slice(0, 541, None))
+(slice(2978, 3550, None), slice(0, 189, None), slice(0, 541, None))
+
+Same Error: 
+ValueError: OUT_OF_RANGE: Propagated bounds [0, 3548), with size=3548, for dimension 0 are incompatible with existing bounds [2978, 3550), with size=572. [transform='Rank 3 -> 5 index space transform:   Input domain:     0: [2978, 3550)     1: [0, 472)     2: [0, 541)   Output index maps:     out[0] = 0     out[1] = 0     out[2] = 0 + 1 * in[0]     out[3] = 0 + 1 * in[1]     out[4] = 0 + 1 * in[2] '] [domain='{origin={0, 0, 0, 0, 0}, shape={1, 1, 3548, 576, 576}}']
