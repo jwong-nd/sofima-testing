@@ -29,7 +29,7 @@ class StitchAndRender3dTiles(subvolume_processor.SubvolumeProcessor):
 
   def __init__(
       self,
-      tile_map: Sequence[Sequence[int]],
+      tile_layout: Sequence[Sequence[int]],
       tile_mesh: str,
       key_to_mesh_index: dict[int, tuple],
       stride: ZYX,
@@ -54,7 +54,7 @@ class StitchAndRender3dTiles(subvolume_processor.SubvolumeProcessor):
       order: see `warp.ndimage_warp`
       parallelism: see `warp.ndimage_warp`
     """
-    self._tile_map = np.array(tile_map)
+    self._tile_layout = tile_layout
     self._stride = stride
     self._offset = offset
     self._margin = margin
@@ -71,7 +71,7 @@ class StitchAndRender3dTiles(subvolume_processor.SubvolumeProcessor):
     )
     
     self._key_to_tile_id = {}
-    for y, row in enumerate(tile_map):
+    for y, row in enumerate(tile_layout):
       for x, tile_id in enumerate(row):
         self._key_to_tile_id[(x, y)] = tile_id
 
@@ -123,9 +123,9 @@ class StitchAndRender3dTiles(subvolume_processor.SubvolumeProcessor):
     mask = np.zeros(shape[1:], dtype=bool)
     if self._margin > 0:
       x0 = self._margin if tx > 0 else 0
-      x1 = -self._margin if tx < self._tile_map.shape[-1] - 1 else -1
+      x1 = -self._margin if tx < self._tile_layout.shape[-1] - 1 else -1
       y0 = self._margin if ty > 0 else 0
-      y1 = -self._margin if ty < self._tile_map.shape[-2] - 1 else -1
+      y1 = -self._margin if ty < self._tile_layout.shape[-2] - 1 else -1
       mask[y0:y1, x0:x1] = 1
     else:
       mask[...] = 1

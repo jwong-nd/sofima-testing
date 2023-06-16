@@ -1,6 +1,7 @@
 import tensorstore as ts 
 
-def open_zarr(bucket: str, path: str):
+
+def open_zarr_gcs(bucket: str, path: str):
     return ts.open({
         'driver': 'zarr',
         'kvstore': {
