@@ -22,6 +22,7 @@ class StitchAndRender3dTiles(subvolume_processor.SubvolumeProcessor):
   """Renders a volume by stitching 3d tiles placed on a 2d grid."""
 
   _tile_meshes = None
+  _mesh_index_to_xy = {}
   _tile_boxes = {}
   _inverted_meshes = {}
 
@@ -31,7 +32,7 @@ class StitchAndRender3dTiles(subvolume_processor.SubvolumeProcessor):
       self,
       tile_layout: Sequence[Sequence[int]],
       tile_mesh: str,
-      key_to_mesh_index: dict[int, tuple],
+      xy_to_mesh_index: dict[int, tuple],
       stride: ZYX,
       offset: XYZ = (0, 0, 0),
       margin: int = 0,
@@ -63,17 +64,17 @@ class StitchAndRender3dTiles(subvolume_processor.SubvolumeProcessor):
     self._work_size = work_size
 
     StitchAndRender3dTiles._tile_meshes = tile_mesh
-    StitchAndRender3dTiles._mesh_index_to_key = {
-      v:k for k, v in key_to_mesh_index.items()
+    StitchAndRender3dTiles._mesh_index_to_xy = {
+      v:k for k, v in xy_to_mesh_index.items()
     }
     assert StitchAndRender3dTiles._tile_meshes.shape[1] == len(
-        StitchAndRender3dTiles._mesh_index_to_key
+        StitchAndRender3dTiles._mesh_index_to_xy
     )
     
-    self._key_to_tile_id = {}
+    self._xy_to_tile_id = {}
     for y, row in enumerate(tile_layout):
       for x, tile_id in enumerate(row):
-        self._key_to_tile_id[(x, y)] = tile_id
+        self._xy_to_tile_id[(x, y)] = tile_id
 
   def _open_tile_volume(self, tile_id: int) -> Any:
     """Returns a ZYX-shaped ndarray-like object representing the tile data."""
@@ -91,7 +92,7 @@ class StitchAndRender3dTiles(subvolume_processor.SubvolumeProcessor):
     )
 
     for i in range(StitchAndRender3dTiles._tile_meshes.shape[1]):
-      tx, ty = StitchAndRender3dTiles._mesh_index_to_key[i]
+      tx, ty = StitchAndRender3dTiles._mesh_index_to_xy[i]
 
       mesh = StitchAndRender3dTiles._tile_meshes[:, i, ...]
       tg_box = map_utils.outer_box(mesh, map_box, self._stride)
@@ -160,7 +161,7 @@ class StitchAndRender3dTiles(subvolume_processor.SubvolumeProcessor):
       logging.info('Processing source %r (%r)', i, out_box)
 
       coord_map = StitchAndRender3dTiles._tile_meshes[:, i, ...]
-      tx, ty = StitchAndRender3dTiles._mesh_index_to_key[i]
+      tx, ty = StitchAndRender3dTiles._mesh_index_to_xy[i]
 
       if i not in StitchAndRender3dTiles._inverted_meshes:
         # Add context to avoid rounding issues in map inversion.
@@ -234,7 +235,7 @@ class StitchAndRender3dTiles(subvolume_processor.SubvolumeProcessor):
 
     volstores = {}
     for i in range(StitchAndRender3dTiles._tile_meshes.shape[1]):
-      tile_id = self._key_to_tile_id[StitchAndRender3dTiles._mesh_index_to_key[i]]
+      tile_id = self._xy_to_tile_id[StitchAndRender3dTiles._mesh_index_to_xy[i]]
       volstores[i] = self._open_tile_volume(tile_id)
 
     # Bounding boxes representing a single tile placed the origin.
