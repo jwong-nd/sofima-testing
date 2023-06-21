@@ -40,3 +40,7 @@ Simply copy the zip file onto the VM, unzip, and copy into base folders:
     $ sudo cp -P cudnn-*-archive/lib/libcudnn* /usr/local/cuda/lib64 
     $ sudo chmod a+r /usr/local/cuda/include/cudnn*.h /usr/local/cuda/lib64/libcudnn*
     ```
+
+New Potential Command: 
+conda install cuda -c nvidia
+I will try setting up a brand new GPU that does not have the pxtas problem. 

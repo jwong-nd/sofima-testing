@@ -22,7 +22,6 @@ import fusion
 # ^All are forks
 
 
-
 # NOTE:
 # - SOFIMA/ZarrStitcher follows following basis convention:  
 # o -- x
@@ -33,6 +32,7 @@ import fusion
 # - All displacements are defined in pixel space established 
 # by the downsample_exp/resolution of the input images. 
 
+# TODO: Consider moving to zarr_io -> 'zarr_utils'
 class CloudStorage(Enum):
     """
     Documented Cloud Storage Options
@@ -41,6 +41,7 @@ class CloudStorage(Enum):
     GCS = 2
 
 
+# TODO: Consider moving to zarr_io -> 'zarr_utils'
 @dataclass
 class ZarrDataset:
     """
@@ -52,15 +53,17 @@ class ZarrDataset:
     tile_names: list[str]
     downsample_exp: int
 
+
+# TODO: Consider moving to zarr_io -> 'zarr_utils'
 def load_zarr_data(params: ZarrDataset
-                   ) -> tuple[list[ts.Tensorstore], tuple[int, int, int]]:
+                   ) -> tuple[list[ts.TensorStore], tuple[int, int, int]]:
     """
     Reads Zarr dataset from input location 
     and returns list of equally-sized tensorstores
     in matching order as ZarrDataset.tile_names and tile size. 
     """
     
-    def load_zarr(bucket: str, tile_location: str) -> ts.Tensorstore:
+    def load_zarr(bucket: str, tile_location: str) -> ts.TensorStore:
         if params.cloud_storage == CloudStorage.S3:
             return zarr_io.open_zarr_s3(bucket, tile_location)
         else:  # cloud == 'gcs'
@@ -73,7 +76,9 @@ def load_zarr_data(params: ZarrDataset
         tile_volumes.append(tile)
         
         _, _, tz, ty, tx = tile.shape
-        min_x, min_y, min_z = np.min(min_x, tx), np.min(min_y, ty), np.min(min_z, tz)
+        min_x, min_y, min_z = int(np.minimum(min_x, tx)), \
+                              int(np.minimum(min_y, ty)), \
+                              int(np.minimum(min_z, tz))
     tile_size_xyz = min_x, min_y, min_z
 
     # Standardize size of tile volumes
@@ -120,8 +125,7 @@ class ZarrFusion(fusion.StitchAndRender3dTiles):
                  stride_zyx: tuple[int, int, int],
                  offset_xyz: tuple[float, float, float],
                  parallelism=16) -> None:
-        super.__init__(self, 
-                       tile_layout,
+        super().__init__(tile_layout,
                        fine_tile_mesh,
                        fine_mesh_xy_to_index, 
                        stride_zyx,
@@ -134,7 +138,7 @@ class ZarrFusion(fusion.StitchAndRender3dTiles):
         if tile_id in self.cache:
             return self.cache[tile_id]
 
-        tile_volumes = load_zarr_data(self.zarr_params)
+        tile_volumes, tile_size_xyz = load_zarr_data(self.zarr_params)
         tile = tile_volumes[tile_id]
         self.cache[tile_id] = SyncAdapter(tile[0,0,:,:,:])
         return self.cache[tile_id]
@@ -156,11 +160,11 @@ class ZarrStitcher:
 
         self.input_zarr = input_zarr
 
-        self.tile_volumes: list[ts.Tensorstore] = []  # 5D tczyx homogenous shape
+        self.tile_volumes: list[ts.TensorStore] = []  # 5D tczyx homogenous shape
         self.tile_volumes, self.tile_size_xyz = load_zarr_data(input_zarr)
         self.tile_layout = tile_layout
 
-        self.tile_map: dict[tuple[int, int], ts.Tensorstore] = {}
+        self.tile_map: dict[tuple[int, int], ts.TensorStore] = {}
         for y, row in enumerate(tile_layout):
             for x, tile_id in enumerate(row):
                 self.tile_map[(x, y)] = self.tile_volumes[tile_id]
@@ -179,7 +183,7 @@ class ZarrStitcher:
         """
 
         # Custom data loading for coarse registration
-        _tile_volumes: list[ts.Tensorstore] = []
+        _tile_volumes: list[ts.TensorStore] = []
         for vol in self.tile_volumes:
             _tile_volumes.append(vol.T[:,:,:,0,0])
 
@@ -243,17 +247,17 @@ class ZarrStitcher:
         # Update mesh (convert coarse tile mesh into fine patch mesh)
         data_x = (cx[:, 0, ...], fine_x, offsets_x)
         data_y = (cy[:, 0, ...], fine_y, offsets_y)
-        fx, fy, fine_mesh, nbors, fine_mesh_xy_to_index = fine_registration.aggregate_arrays(
+        fx, fy, fine_mesh, nbors, fine_mesh_xy_to_index = stitch_elastic.aggregate_arrays(
             data_x, data_y, list(self.tile_map.keys()),
             coarse_mesh[:, 0, ...], stride=stride_zyx, tile_shape=self.tile_size_xyz[::-1])
 
         @jax.jit
         def prev_fn(x):
-            target_fn = ft.partial(stitch_elastic.compute_target_mesh, x=x, fx=fx, fy=fy, stride=stride)
+            target_fn = ft.partial(stitch_elastic.compute_target_mesh, x=x, fx=fx, fy=fy, stride=stride_zyx)
             x = jax.vmap(target_fn)(nbors)
             return jnp.transpose(x, [1, 0, 2, 3, 4])
 
-        config = mesh.IntegrationConfig(dt=0.001, gamma=0., k0=0.01, k=0.1, stride=stride,
+        config = mesh.IntegrationConfig(dt=0.001, gamma=0., k0=0.01, k=0.1, stride=stride_zyx,
                                         num_iters=1000, max_iters=20000, stop_v_max=0.001,
                                         dt_max=100, prefer_orig_order=False,
                                         start_cap=0.1, final_cap=10., remove_drift=True)
@@ -262,11 +266,14 @@ class ZarrStitcher:
 
         return solved_fine_mesh, fine_mesh_xy_to_index, stride_zyx
     
+    
     def _run_fusion(self, 
                     output_cloud_storage: CloudStorage,
                     output_bucket: str, 
                     output_path: str,
                     downsample_exp: int,
+                    cx: np.ndarray, 
+                    cy: np.ndarray, 
                     fine_mesh: np.ndarray, 
                     fine_mesh_xy_to_index: dict[tuple[int, int], int],
                     stride_zyx: tuple[int, int, int],
@@ -288,26 +295,28 @@ class ZarrStitcher:
 
         if output_cloud_storage == CloudStorage.S3:
             raise NotImplementedError(
-                'Tensorstore does not support s3 writes.'
+                'TensorStore does not support s3 writes.'
             )
 
+        fusion_zarr = self.input_zarr
         fusion_mesh = fine_mesh
         fusion_stride_zyx = stride_zyx
         fusion_tile_size_zyx = self.tile_size_xyz
         if downsample_exp != self.input_zarr.downsample_exp:
             # Reload the data at target resolution
-            updated_zarr = ZarrDataset(self.input_zarr.cloud_storage,
-                                       self.input_zarr.bucket, 
+            fusion_zarr = ZarrDataset(self.input_zarr.cloud_storage,
+                                       self.input_zarr.bucket,
+                                       self.input_zarr.dataset_path, 
                                        self.input_zarr.tile_names,
                                        downsample_exp)
-            
+
             # Rescale fine mesh, stride
             curr_exp = self.input_zarr.downsample_exp
             target_exp = downsample_exp
             scale_factor = 2**(curr_exp - target_exp)
             fusion_mesh = fine_mesh * scale_factor
             fusion_stride_zyx = tuple(np.array(stride_zyx) * scale_factor)
-            fusion_tile_size_zyx = tuple(np.array(self.tile_size_xyz) * scale_factor)
+            fusion_tile_size_zyx = tuple(np.array(self.tile_size_xyz)[::-1] * scale_factor)
 
         start = np.array([np.inf, np.inf, np.inf])
         map_box = bounding_box.BoundingBox(
@@ -317,7 +326,7 @@ class ZarrStitcher:
         fine_mesh_index_to_xy = {
             v: k for k, v in fine_mesh_xy_to_index.items()
         }
-        for i in range(0, len(fusion_mesh.shape[1])): 
+        for i in range(0, fusion_mesh.shape[1]): 
             tx, ty = fine_mesh_index_to_xy[i]
             mesh = fusion_mesh[:, i, ...]
             tg_box = map_utils.outer_box(mesh, map_box, fusion_stride_zyx)
@@ -337,18 +346,29 @@ class ZarrStitcher:
             start = np.minimum(start, out_box.start)
             print(f'{tg_box=}')
             print(f'{out_box=}')  # TODO, Delete, Leaving in for now
-
-        fused_shape = tg_box.shape  # All tg_box's have the same shape
         crop_offset = -start
+        print(crop_offset)
+
+        # Fused shape
+        cx[np.isnan(cx)] = 0    
+        cy[np.isnan(cy)] = 0
+        x_overlap = cx[2,0,0,0] / fusion_tile_size_zyx[2]
+        y_overlap = cy[1,0,0,0] / fusion_tile_size_zyx[1]
+        y_shape, x_shape = cx.shape[2], cx.shape[3]
+
+        fused_x = fusion_tile_size_zyx[2] * (1 + ((x_shape - 1) * (1 - x_overlap)))
+        fused_y = fusion_tile_size_zyx[1] * (1 + ((y_shape - 1) * (1 - y_overlap)))
+        fused_z = fusion_tile_size_zyx[0]
+        fused_shape_5d = [1, 1, int(fused_z), int(fused_y), int(fused_x)]
 
         # Perform fusion
-        ds_out = zarr_io.write_zarr(output_bucket, fused_shape, output_path)
-        renderer = ZarrFusion(updated_zarr, 
+        ds_out = zarr_io.write_zarr(output_bucket, fused_shape_5d, output_path)
+        renderer = ZarrFusion(zarr_params=fusion_zarr, 
                               tile_layout=self.tile_layout, 
-                              tile_mesh=fusion_mesh, 
-                              key_to_mesh_index=fine_mesh_xy_to_index,
+                              fine_tile_mesh=fusion_mesh, 
+                              fine_mesh_xy_to_index=fine_mesh_xy_to_index,
                               stride_zyx=fusion_stride_zyx,
-                              offset=crop_offset, 
+                              offset_xyz=crop_offset, 
                               parallelism=parallelism)
 
         box = bounding_box.BoundingBox(start=(0,0,0), size=ds_out.shape[4:1:-1])  # Needs xyz 
@@ -373,64 +393,63 @@ class ZarrStitcher:
             print('box {i}: {t1:0.2f} render  {t2:0.2f} write'.format(i=i, t1=t_render - t_start, t2=t_write - t_render))
 
 
-    # Preparing inputs to fusion
-    def run_fusion_on_coarse_mesh(self, 
-                                  output_cloud_storage: CloudStorage,
-                                  output_bucket: str, 
-                                  output_path: str,
-                                  downsample_exp: int,
-                                  coarse_mesh: np.ndarray,
-                                  stride_zyx: tuple[int, int, int] = (20, 20, 20), 
-                                  parallelism: int = 16) -> None:
-        """
-        Transforms coarse mesh into fine mesh before 
-        passing along to ZarrStitcher._run_fusion(...)
-        """
+    # def run_fusion_on_coarse_mesh(self, 
+    #                               output_cloud_storage: CloudStorage,
+    #                               output_bucket: str, 
+    #                               output_path: str,
+    #                               downsample_exp: int,
+    #                               coarse_mesh: np.ndarray,
+    #                               stride_zyx: tuple[int, int, int] = (20, 20, 20), 
+    #                               parallelism: int = 16) -> None:
+    #     """
+    #     Transforms coarse mesh into fine mesh before 
+    #     passing along to ZarrStitcher._run_fusion(...)
+    #     """
+ 
+    #     # Fine Mesh Tile Index
+    #     fine_mesh_xy_to_index = {(tx, ty): i for i, (tx, ty) in enumerate(self.tile_map.keys())}
 
-        # Fine Mesh Tile Index
-        fine_mesh_xy_to_index = {(tx, ty): i for i, (tx, ty) in enumerate(self.tile_map.keys())}
-
-        # Fine Mesh
-        dim = len(stride_zyx)
-        mesh_shape = (np.array(self.tile_size_xyz[::-1]) // stride_zyx).tolist()
-        fine_mesh = np.zeros([dim, len(fine_mesh_xy_to_index)] + mesh_shape, dtype=np.float32)
-        for (tx, ty) in self.tile_map.keys():
-            fine_mesh[:, fine_mesh_xy_to_index[tx, ty], ...] = coarse_mesh[:, 0, ty, tx].reshape(
-            (dim,) + (1,) * dim)
-
-        self._run_fusion(output_cloud_storage,
-                        output_bucket, 
-                        output_path,
-                        downsample_exp,
-                        fine_mesh, 
-                        fine_mesh_xy_to_index,
-                        stride_zyx,
-                        parallelism)
+    #     # Fine Mesh
+    #     dim = len(stride_zyx)
+    #     mesh_shape = (np.array(self.tile_size_xyz[::-1]) // stride_zyx).tolist()
+    #     fine_mesh = np.zeros([dim, len(fine_mesh_xy_to_index)] + mesh_shape, dtype=np.float32)
+    #     for (tx, ty) in self.tile_map.keys(): 
+    #         fine_mesh[:, fine_mesh_xy_to_index[tx, ty], ...] = coarse_mesh[:, 0, ty, tx].reshape(
+    #         (dim,) + (1,) * dim)
+    
+    #     self._run_fusion(output_cloud_storage,
+    #                     output_bucket, 
+    #                     output_path,
+    #                     downsample_exp,
+    #                     fine_mesh, 
+    #                     fine_mesh_xy_to_index,
+    #                     stride_zyx,
+    #                     parallelism)
 
 
-    def run_fusion_on_fine_mesh(self, 
-                                output_cloud_storage: CloudStorage,
-                                output_bucket: str, 
-                                output_path: str,
-                                downsample_exp: int,
-                                fine_mesh: np.ndarray, 
-                                fine_mesh_xy_to_index: dict[tuple[int, int], int],
-                                stride_zyx: tuple[int, int, int],
-                                parallelism: int = 16
-                                ) -> None:
-        """
-        Simply passes all input parameters to 
-        private method ZarrStitcher._run_fusion(...)
-        """
+    # def run_fusion_on_fine_mesh(self, 
+    #                             output_cloud_storage: CloudStorage,
+    #                             output_bucket: str, 
+    #                             output_path: str,
+    #                             downsample_exp: int,
+    #                             fine_mesh: np.ndarray, 
+    #                             fine_mesh_xy_to_index: dict[tuple[int, int], int],
+    #                             stride_zyx: tuple[int, int, int],
+    #                             parallelism: int = 16
+    #                             ) -> None:
+    #     """
+    #     Simply passes all input parameters to 
+    #     private method ZarrStitcher._run_fusion(...)
+    #     """
 
-        self._run_fusion(output_cloud_storage,
-                        output_bucket, 
-                        output_path,
-                        downsample_exp,
-                        fine_mesh, 
-                        fine_mesh_xy_to_index,
-                        stride_zyx,
-                        parallelism)
+    #     self._run_fusion(output_cloud_storage,
+    #                     output_bucket, 
+    #                     output_path,
+    #                     downsample_exp,
+    #                     fine_mesh, 
+    #                     fine_mesh_xy_to_index,
+    #                     stride_zyx,
+    #                     parallelism)
 
 
 if __name__ == '__main__':
@@ -452,7 +471,7 @@ if __name__ == '__main__':
     # Application Outputs
     output_cloud_storage = CloudStorage.GCS
     output_bucket = 'sofima-test-bucket'
-    output_path = 'output.zarr'
+    output_path = 'output.zarr'   # This is your output name!
 
     # SOFIMA, Low Res
     zarr_stitcher = ZarrStitcher(input_zarr, tile_layout)
@@ -462,6 +481,8 @@ if __name__ == '__main__':
                                             output_path=output_path,
                                             downsample_exp=2,
                                             coarse_mesh=coarse_mesh)
+
+    # First up, SOFIMA Low Res.
 
     # High Res
     # stride_zyx = (20, 20, 20)

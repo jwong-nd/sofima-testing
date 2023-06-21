@@ -163,6 +163,9 @@ def compute_coarse_offsets(tile_layout: np.ndarray,
 
     return conn_x, conn_y
 
+# Horizontal / Vertical appear to follow a different
+# convention. Fix that. 
+
 # Will return to this, 
 # Addressing Michal's comments
 
