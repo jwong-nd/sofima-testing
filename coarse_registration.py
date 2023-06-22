@@ -99,10 +99,12 @@ def _estimate_v_offset_zyx(top_tile: ts.TensorStore, bot_tile: ts.TensorStore,
     mz = tile_size_xyz[2] // 2
     mx = tile_size_xyz[0] // 2
     
-    if sample_left: 
-        mx = mx // 2
-    # if sample_right:
+    # if sample_left: 
+    #     mx = mx // 2
+    # if sample_left:
     #     mx = mx + (mx // 2)
+    # if sample_left: 
+    #     mz = mz + (mz // 2)
 
     top = top_tile[mx-SEARCH_R_ORTHO:mx+SEARCH_R_ORTHO, 
                    tile_size_xyz[1]-SEARCH_OVERLAP:, 

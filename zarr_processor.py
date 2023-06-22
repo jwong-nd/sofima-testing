@@ -301,7 +301,7 @@ class ZarrStitcher:
         fusion_zarr = self.input_zarr
         fusion_mesh = fine_mesh
         fusion_stride_zyx = stride_zyx
-        fusion_tile_size_zyx = self.tile_size_xyz
+        fusion_tile_size_zyx = self.tile_size_xyz[::-1]
         if downsample_exp != self.input_zarr.downsample_exp:
             # Reload the data at target resolution
             fusion_zarr = ZarrDataset(self.input_zarr.cloud_storage,
@@ -317,6 +317,7 @@ class ZarrStitcher:
             fusion_mesh = fine_mesh * scale_factor
             fusion_stride_zyx = tuple(np.array(stride_zyx) * scale_factor)
             fusion_tile_size_zyx = tuple(np.array(self.tile_size_xyz)[::-1] * scale_factor)
+            print(f'{scale_factor=}')
 
         start = np.array([np.inf, np.inf, np.inf])
         map_box = bounding_box.BoundingBox(
@@ -347,19 +348,20 @@ class ZarrStitcher:
             print(f'{tg_box=}')
             print(f'{out_box=}')  # TODO, Delete, Leaving in for now
         crop_offset = -start
-        print(crop_offset)
+        print(f'{crop_offset=}')
 
         # Fused shape
         cx[np.isnan(cx)] = 0    
         cy[np.isnan(cy)] = 0
-        x_overlap = cx[2,0,0,0] / fusion_tile_size_zyx[2]
-        y_overlap = cy[1,0,0,0] / fusion_tile_size_zyx[1]
+        x_overlap = cx[2,0,0,0] / self.tile_size_xyz[0]
+        y_overlap = cy[1,0,0,0] / self.tile_size_xyz[1]
         y_shape, x_shape = cx.shape[2], cx.shape[3]
 
         fused_x = fusion_tile_size_zyx[2] * (1 + ((x_shape - 1) * (1 - x_overlap)))
         fused_y = fusion_tile_size_zyx[1] * (1 + ((y_shape - 1) * (1 - y_overlap)))
         fused_z = fusion_tile_size_zyx[0]
         fused_shape_5d = [1, 1, int(fused_z), int(fused_y), int(fused_x)]
+        print(f'{fused_shape_5d=}')
 
         # Perform fusion
         ds_out = zarr_io.write_zarr(output_bucket, fused_shape_5d, output_path)
