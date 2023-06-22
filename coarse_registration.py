@@ -126,42 +126,41 @@ def _estimate_v_offset_zyx(top_tile: ts.TensorStore, bot_tile: ts.TensorStore,
     return pc_init_zyx + pc_zyx
 
 def compute_coarse_offsets(tile_layout: np.ndarray, 
-                           tile_volumes: list[ts.TensorStore],
-                           sample_left = False) -> tuple[np.ndarray, np.ndarray]:
-    # Using numpy axis convention
-    layout_x, layout_y = tile_layout.shape
+                           tile_volumes: list[ts.TensorStore]
+                           ) -> tuple[np.ndarray, np.ndarray]:
+    layout_y, layout_x = tile_layout.shape
 
     # Output Containers, sofima uses cartesian convention
-    conn_x = np.full((3, 1, layout_x, layout_y), np.nan)
-    conn_y = np.full((3, 1, layout_x, layout_y), np.nan)
+    conn_x = np.full((3, 1, layout_y, layout_x), np.nan)
+    conn_y = np.full((3, 1, layout_y, layout_x), np.nan)
 
     # Row Pairs
-    for x in range(layout_x): 
-        for y in range(layout_y - 1):  # Stop one before the end 
-            left_id = tile_layout[x, y]
-            right_id = tile_layout[x, y + 1]
+    for y in range(layout_y): 
+        for x in range(layout_x - 1):  # Stop one before the end 
+            left_id = tile_layout[y, x]
+            right_id = tile_layout[y, x + 1]
             left_tile = tile_volumes[left_id]
             right_tile = tile_volumes[right_id]
 
-            conn_x[:, 0, x, y] = _estimate_h_offset_zyx(left_tile, right_tile)
+            conn_x[:, 0, y, x] = _estimate_h_offset_zyx(left_tile, right_tile)
             gc.collect()
 
             print(f'Left Id: {left_id}, Right Id: {right_id}')
-            print(f'Left: ({x}, {y}), Right: ({x}, {y + 1})', conn_x[:, 0, x, y])
+            print(f'Left: ({y}, {x}), Right: ({y}, {x + 1})', conn_x[:, 0, y, x])
 
-    # Column Pairs
-    for y in range(layout_y):
-        for x in range(layout_x - 1):
-            top_id = tile_layout[x, y]
-            bot_id = tile_layout[x + 1, y]
+    # Column Pairs -- Reversed Loops
+    for x in range(layout_x):
+        for y in range(layout_y - 1):
+            top_id = tile_layout[y, x]
+            bot_id = tile_layout[y + 1, x]
             top_tile = tile_volumes[top_id]
             bot_tile = tile_volumes[bot_id]
 
-            conn_y[:, 0, x, y] = _estimate_v_offset_zyx(top_tile, bot_tile, sample_left)
+            conn_y[:, 0, y, x] = _estimate_v_offset_zyx(top_tile, bot_tile)
             gc.collect()
             
             print(f'Top Id: {top_id}, Bottom Id: {bot_id}')
-            print(f'Top: ({x}, {y}), Bot: ({x + 1}, {y})', conn_y[:, 0, x, y])
+            print(f'Top: ({y}, {x}), Bot: ({y + 1}, {x})', conn_y[:, 0, y, x])
 
     return conn_x, conn_y
 
