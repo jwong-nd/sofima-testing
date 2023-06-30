@@ -2,6 +2,7 @@ import logging
 import time
 
 import dask
+from dask.distributed import Client, LocalCluster
 from distributed import wait
 import xarray_multiscale
 from ome_zarr.io import parse_url
@@ -56,6 +57,8 @@ scale_factor = 2
 voxel_sizes = (0.176, 0.298, 0.298)
 
 # Actual Processing
+client = Client(LocalCluster(processes=True, threads_per_worker=1))
+
 dask_image = da.from_array(SyncAdapter(image))
 # This is the optimized chunksize
 chunks = chunk_utils.expand_chunks(chunks=dask_image.chunksize,
