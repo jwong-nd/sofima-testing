@@ -4,6 +4,8 @@ Sofima testing code.
 
 
 ## Development Environment Setup Instructions from environment.yml
+0) Create a VM with preinstalled CUDA 11.3 drivers. This will save you a lot of work.
+
 1) Setup conda environment: 
     ```
     conda env create -f environment.yml
@@ -18,16 +20,16 @@ Sofima testing code.
     ```
 
 ## Development Environment Setup Instructions for Scratch
-1) Create Python 3.11 conda environment  
+0) Create a VM with preinstalled CUDA 11.3 drivers. This will save you a lot of work.
+1) Create Python 3.11 conda environment
 2) Pip install standard packages. Exceptions: 
     - SOFIMA is in active development, pip install the most recent commit: 
     ```
     pip install git+https://github.com/google-research/sofima
     ```
-    - JAX has dependencies on (GPU driver version, CUDA middleware version, cuDNN library version). 
-    This command gets you halfway there, which installs the most up-to-date drivers and Jax version compatible to your locally-installed CUDA version. 
+    - Install jaxlib/CUDA: 
     ```
-    conda install jaxlib=*=*cuda* jax cuda-nvcc -c conda-forge -c nvidia
+    pip install --upgrade "jax[cuda11_pip]" -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
     ```
 
 3) Last JAX dependency, cuDNN library version, is pulled from the NVIDIA website (you need to first sign up for an NVIDIA account). Downloaded cuDNN library must match the major version and be greater than the minor version of the cuDNN compiled into JAX. (Essentially, just download the newest version.)
@@ -41,6 +43,4 @@ Simply copy the zip file onto the VM, unzip, and copy into base folders:
     $ sudo chmod a+r /usr/local/cuda/include/cudnn*.h /usr/local/cuda/lib64/libcudnn*
     ```
 
-New Potential Command: 
-conda install cuda -c nvidia
-I will try setting up a brand new GPU that does not have the pxtas problem. 
+(Step (2) tehcnically downloads cuDNN, but not the same version in which the jax wheel is compiled on. This step installs the same cuDNN verion.)
