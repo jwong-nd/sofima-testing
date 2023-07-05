@@ -100,7 +100,7 @@ def main():
   LOGGER.info("Starting write...")
   t0 = time.time()
   jobs = write_multiscale(
-      pyramid,
+      pyramid_data,
       group=store,
       fmt=CurrentFormat(),
       axes=axes_5d,
