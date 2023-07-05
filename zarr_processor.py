@@ -189,8 +189,7 @@ class ZarrStitcher:
             _tile_volumes.append(vol.T[:,:,:,0,0])
 
         cx, cy = coarse_registration.compute_coarse_offsets(self.tile_layout, 
-                                                            _tile_volumes, 
-                                                            False)  # TODO
+                                                            _tile_volumes)
         coarse_mesh = stitch_rigid.optimize_coarse_mesh(cx, 
                                                         cy, 
                                                         mesh_fn=stitch_rigid.elastic_tile_mesh_3d)
@@ -479,11 +478,11 @@ if __name__ == '__main__':
     # SOFIMA, Low Res
     zarr_stitcher = ZarrStitcher(input_zarr, tile_layout)
     cx, cy, coarse_mesh = zarr_stitcher.run_coarse_registration()
-    zarr_stitcher.run_fusion_on_coarse_mesh(output_cloud_storage=output_cloud_storage,
-                                            output_bucket=output_bucket,
-                                            output_path=output_path,
-                                            downsample_exp=2,
-                                            coarse_mesh=coarse_mesh)
+    # zarr_stitcher.run_fusion_on_coarse_mesh(output_cloud_storage=output_cloud_storage,
+    #                                         output_bucket=output_bucket,
+    #                                         output_path=output_path,
+    #                                         downsample_exp=2,
+    #                                         coarse_mesh=coarse_mesh)
 
     # First up, SOFIMA Low Res.
 
