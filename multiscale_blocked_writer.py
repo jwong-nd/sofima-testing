@@ -53,6 +53,7 @@ def main():
     input_name = 'output_level_0_debug.zarr'
     image = zarr_io.open_zarr_gcs(input_bucket, input_name)
     arr = dask.array.from_array(SyncAdapter(image))
+    arr = arr.rechunk((1, 1, 128, 128, 128))
     arr = ensure_array_5d(arr)
     LOGGER.info(f"input array: {arr}")
     LOGGER.info(f"input array size: {arr.nbytes / 2 ** 20} MiB")
@@ -80,7 +81,7 @@ def main():
             arr,
             image_name,
             n_levels,
-            scale_factors,
+            scale_factors[2:],
             voxel_sizes,
             origin=None,
         )
