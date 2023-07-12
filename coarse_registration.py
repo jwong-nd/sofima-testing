@@ -6,6 +6,8 @@ import tensorstore as ts
 
 from sofima import flow_field
 
+from eval_reg import utils, metrics
+
 
 # Small Query Size (Dispim)
 # QUERY_R_ORTHO = 25
@@ -164,11 +166,191 @@ def compute_coarse_offsets(tile_layout: np.ndarray,
 
     return conn_x, conn_y
 
-# Horizontal / Vertical appear to follow a different
-# convention. Fix that. 
+# New coarse registration window action: 
+# Developing new functions so I do not break the ones above
 
-# Will return to this, 
-# Addressing Michal's comments
+def _r_estimate_h_offset_zyx(left_tile: ts.TensorStore, 
+                             right_tile: ts.TensorStore, 
+                             percent_overlap: float,
+                             ) -> tuple[list[float], float]:
+    """
+    Args: 
+    - left_tile: Search space
+    - right_tile: Query space
+    - percent_overlap: Percentage of tile size that is shared
+        between neighboring tiles. Value between [0, 1).
+    """
+    
+    tx, ty, tz = left_tile.shape
+    mz = tz // 2
+    overlap_offset = tx * percent_overlap
+    overlap_width = tx * (1 - percent_overlap)
+
+    # Huerisitc: Search patch shall be 1/2 width of the overlap region
+    # Hueristic: Query patch shall be 3/4 size of search patch
+    sp_width = 0.5 * (overlap_width)
+    qp_width = 0.75 * sp_width
+
+    # Defining centerpts of search/query patches
+    # Hueristic: Search patch confined to overlap region bounds
+    offsets = []
+    for cx in np.linspace((0.5 * sp_width), 
+                         overlap_width - (0.5 * sp_width), 
+                         num=3):
+        for cy in np.linspace(0.5 * sp_width, 
+                             ty - (0.5 * sp_width),
+                             num=3):
+            cx = int(cx)
+            cy = int(cy)
+            
+            # Search Tile
+            search_cx = overlap_offset+cx
+            left = left_tile[search_cx-(0.5 * sp_width):search_cx+(0.5 * sp_width),
+                             cy-(0.5 * sp_width):cy+(0.5 * sp_width),
+                             mz-(0.5 * sp_width):mz+(0.5 * sp_width)].read().result().T
+           
+            # Query Tile
+            right = right_tile[cx-(0.5 * qp_width):cx+(0.5 * qp_width),
+                               cy-(0.5 * qp_width):cy+(0.5 * qp_width),
+                               mz-(0.5 * qp_width):mz+(0.5 * qp_width)].read().result().T
+
+            # Produce Offset
+            start_zyx = np.array(left.shape) // 2 - np.array(right.shape) // 2
+            pc_init_zyx = np.array([0, 0, search_cx + start_zyx[2]])
+            pc_zyx = np.array(_estimate_relative_offset_zyx(left, right))
+            offsets.append(pc_init_zyx + pc_zyx)
+
+    # Evaluate Offsets
+    
+    # If metric < threshold, return the inital tile position offset.
+
+
+
+    # return best_offset  # offset with max metric. Worth outputing and seeing all though. 
+
+
+def _r_estimate_v_offset_zyx(top_tile: ts.TensorStore, 
+                           bot_tile: ts.TensorStore,
+                           percent_overlap: float, 
+                          ) -> tuple[list[float], float]:
+    tx, ty, tz = top_tile.shape
+    mz = tz // 2
+    overlap_offset = ty * percent_overlap
+    overlap_width = ty * (1 - percent_overlap)
+
+    # Huerisitc: Search patch shall be 1/2 width of the overlap region
+    # Hueristic: Query patch shall be 3/4 size of search patch
+    sp_width = 0.5 * (overlap_width)
+    qp_width = 0.75 * sp_width
+
+    # Defining centerpts of search/query patches
+    # Hueristic: Search patch confined to overlap region bounds
+    offsets = []
+    for cy in np.linspace((0.5 * sp_width), 
+                         overlap_width - (0.5 * sp_width), 
+                         num=3):
+        for cx in np.linspace(0.5 * sp_width, 
+                             tx - (0.5 * sp_width),
+                             num=3):
+            cy = int(cy)
+            cx = int(cx)
+
+            # Search Tile
+            search_cy = overlap_offset+cy
+            top = top_tile[search_cy-(0.5 * sp_width):search_cy+(0.5 * sp_width),
+                           cy-(0.5 * sp_width):cy+(0.5 * sp_width),
+                           mz-(0.5 * sp_width):mz+(0.5 * sp_width)].read().result().T
+           
+            # Query Tile
+            bot = bot_tile[cx-(0.5 * qp_width):cx+(0.5 * qp_width),
+                           cy-(0.5 * qp_width):cy+(0.5 * qp_width),
+                           mz-(0.5 * qp_width):mz+(0.5 * qp_width)].read().result().T
+
+            # Produce Offset
+            start_zyx = np.array(top.shape) // 2 - np.array(bot.shape) // 2
+            pc_init_zyx = np.array([0, search_cy + start_zyx[1], 0])    
+            pc_zyx = np.array(_estimate_relative_offset_zyx(top, bot))
+            offsets.append(pc_init_zyx + pc_zyx)
+
+    # Evaluate Offsets
+    
+
+    # If metric < threshold, return the inital tile position offset.
+
+
+    # return best_offset
+
+
+# New global variables: 
+METRIC = 'ISSM'
+WINDOW_SIZE = 5
+NUM_SAMPLES = 100
+
+# def evaluate_offset(image_1: ts.TensorStore, 
+#                     image_2: ts.TensorStore,
+#                     transform: ):
+
+
+#     bounds_1, bounds_2 = utils.calculate_bounds(
+#             image_1_shape, image_2_shape, transform
+#         )
+
+#     # #Sample points in overlapping bounds
+#     points = utils.sample_points_in_overlap(
+#         bounds_1=bounds_1,
+#         bounds_2=bounds_2,
+#         numpoints=self.args["sampling_info"]["numpoints"],
+#         sample_type=self.args["sampling_info"]["sampling_type"],
+#         image_shape=image_1_shape,
+#     )
+
+#     # print("Points: ", points)
+
+#     # Points that fit in window based on a window size
+#     pruned_points = utils.prune_points_to_fit_window(
+#         image_1_shape, points, self.args["window_size"]
+#     )
+
+#     discarded_points_window = points.shape[0] - pruned_points.shape[0]
+#     LOGGER.info(
+#         f"""Number of discarded points when prunning
+#         points to window: {discarded_points_window}""",
+#     )
+
+#     # calculate metrics per images
+#     metric_per_point = []
+
+#     metric_calculator = ImageMetricsFactory().create(
+#         image_1_data,
+#         image_2_data,
+#         self.args["metric"],
+#         self.args["window_size"],
+#     )
+
+#     selected_pruned_points = []
+
+#     for pruned_point in pruned_points:
+
+#         met = metric_calculator.calculate_metrics(
+#             point=pruned_point, transform=transform
+#         )
+
+#         if met:
+#             selected_pruned_points.append(pruned_point)
+#             metric_per_point.append(met)
+
+#     # compute statistics
+#     metric = self.args["metric"]
+#     computed_points = len(metric_per_point)
+
+#     dscrd_pts = points.shape[0] - discarded_points_window - computed_points
+#     message = f"""Computed metric: {metric}
+#     \nMean: {np.mean(metric_per_point)}
+#     \nStd: {np.std(metric_per_point)}
+#     """
+
+
+
 
 # # Updated return function!
 # @ft.partial(jax.jit)
