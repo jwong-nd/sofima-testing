@@ -76,7 +76,7 @@ def main():
               xarray_multiscale.reducers.windowed_mean,
               scale_axis,  # scale factors
               preserve_dtype=True,
-              chunks="auto",  # can also try "preserve", which is the default
+              chunks="preserve",  # can also try "preserve", which is the default
               )[:n_lvls]
 
   pyramid_data = [arr.data for arr in pyramid]
