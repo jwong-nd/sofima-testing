@@ -50,7 +50,10 @@ def main():
 
     # Format Input Zarr -> Dask Array
     input_bucket = 'sofima-test-bucket' 
+    # input_name = 'fused_diSPIM_647403_2022-11-21_23-12-18_CH_405_CAM_1'
+    # input_name = 'fused_diSPIM_647459_2022-12-07_00-00-00_CH_405_CAM_0'
     input_name = 'output_level_0_debug.zarr'
+
     image = zarr_io.open_zarr_gcs(input_bucket, input_name)
     arr = dask.array.from_array(SyncAdapter(image))
     arr = arr.rechunk((1, 1, 128, 128, 128))
@@ -61,7 +64,10 @@ def main():
     # Other Input Parameters
     # output_path = "./fused_multiscale.zarr"
     # group = zarr.open(output_path, mode='w')
-    image_name = 'fused_multiscale.zarr'
+    # image_name = 'fused_multiscale_diSPIM_647403_2022-11-21_23-12-18_CH_405_CAM_1.zarr'
+    # image_name = 'fused_multiscale_diSPIM_647459_2022-12-07_00-00-00_CH_405_CAM_0'
+    image_name = 'fused_multiscale_output_level_0.zarr'
+
     output_path = f"gs://sofima-test-bucket/{image_name}"
     group = zarr.open_group(output_path, mode='w')
 
