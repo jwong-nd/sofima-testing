@@ -18,7 +18,7 @@ def main():
     cloud_storage = zarr_io.CloudStorage.S3 
     bucket = params['input']['bucket']
     dataset_path = params['input']['dataset_path']
-    channel = params['input']['channel']
+    channel = params['input']['registration_channel']
     downsample_exp = params['input']['downsample_exp']
 
     output_cloud_storage = zarr_io.CloudStorage.GCS

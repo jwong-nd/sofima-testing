@@ -1,0 +1,9 @@
+input: 
+  bucket: 'aind-open-data'
+  dataset_path: 'diSPIM_647403_2022-11-21_23-12-18/diSPIM.zarr'
+  registration_channel: 405
+  downsample_exp: 2
+output: 
+  bucket: 'sofima-test-bucket'
+  name: 'fused_multiscale_diSPIM_647403_2022-11-21_23-12-18.zarr' 
+  downsample_exp: 0
