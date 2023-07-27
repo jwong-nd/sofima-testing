@@ -8,7 +8,7 @@ class PipelineConfiguration():
     {bucket}/SOFIMA_{dataset}/{PipelineConfiguration.name}
     """
 
-    def __init__(self, config_file: str = 'config.yaml'): 
+    def __init__(self, config_file: str = '/home/jonathan.wong/sofima-testing/config.yml'): 
         # Read yaml file
         with open(config_file, 'r') as file:
             self.params = yaml.safe_load(file)

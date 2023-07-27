@@ -45,7 +45,7 @@ def main():
 
     # Verify Coarse Registration Looks Good
     zd_list = [zd]
-    remaining_channels = list(set(zd.channels) - set([channel]))
+    remaining_channels = list(set(zd.channels) - set([registration_channel]))
     for channel in remaining_channels: 
         zd_list.append(zarr_io.DiSpimDataset(cloud_storage, 
                                             bucket, 
