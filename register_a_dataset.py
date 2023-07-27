@@ -1,41 +1,47 @@
 import logging
+import numpy as np
 from pathlib import Path
 import time
-import yaml
 
+from config import PipelineConfiguration
+import cloud_utils
 import ng_utils
 from sofima.zarr import zarr_io, zarr_register_and_fuse_3d
+
 
 def main(): 
     logging.basicConfig(format="%(asctime)s %(message)s", datefmt="%Y-%m-%d %H:%M")
     LOGGER = logging.getLogger(__name__)
     LOGGER.setLevel(logging.INFO)
 
-    # Load Configuration File 
-    with open('config.yml', 'r') as file:
-        params = yaml.safe_load(file)
-
+    pc = PipelineConfiguration()
     cloud_storage = zarr_io.CloudStorage.S3 
-    bucket = params['input']['bucket']
-    dataset_path = params['input']['dataset_path']
-    channel = params['input']['registration_channel']
-    downsample_exp = params['input']['downsample_exp']
-
-    output_cloud_storage = zarr_io.CloudStorage.GCS
-    output_bucket = params['output']['bucket']
-    output_path = params['output']['name']
-    output_downsample_exp = params['output']['downsample_exp']
+    bucket = pc.params['input_bucket']
+    dataset_path = pc.params['input_dataset_path']
+    registration_channel = pc.params['registration_channel']
+    downsample_exp = pc.params['downsample_exp']
 
     # Create Dataset
     zd = zarr_io.DiSpimDataset(cloud_storage, 
                             bucket,
                             dataset_path,
-                            channel,
+                            registration_channel,
                             downsample_exp)
+    LOGGER.info(f'Registering Dataset: {pc.dataset_name}')
 
     # Run Coarse Registration
+    t0 = time.time()
     zarr_stitcher = zarr_register_and_fuse_3d.ZarrStitcher(zd)
     cx, cy, coarse_mesh = zarr_stitcher.run_coarse_registration()
+    np.savez_compressed(pc.COARSE_MESH_NAME,
+                        cx=cx, 
+                        cy=cy,
+                        coarse_mesh=coarse_mesh)
+    cloud_utils.write_to_bucket_gcs(pc.params['home_bucket'],
+                                    f'SOFIMA_{pc.dataset_name}/{pc.COARSE_MESH_NAME}',
+                                    pc.COARSE_MESH_NAME)
+    coarse_reg_time = time.time() - t0
+    LOGGER.info(f'Coarse Registration Time: {coarse_reg_time}')
 
     # Verify Coarse Registration Looks Good
     zd_list = [zd]
@@ -47,29 +53,19 @@ def main():
                                             channel, 
                                             downsample_exp))
     ng_utils.ng_link_multi_channel(zd_list, coarse_mesh)
-
+    
     # Run Elastic Registration
-    save_mesh_path = f"{Path(dataset_path).root}_mesh.npy"
+    t0 = time.time()
     zarr_stitcher.run_fine_registration(cx, 
                                         cy,
                                         coarse_mesh,
                                         stride_zyx=(20, 20, 20), 
-                                        save_mesh_path=save_mesh_path)
-
-    # Run Fusion
-    t0 = time.time()
-    zarr_stitcher.run_fusion(output_cloud_storage=output_cloud_storage,
-                            output_bucket=output_bucket,
-                            output_path=output_path,
-                            downsample_exp=output_downsample_exp,
-                            cx=cx,
-                            cy=cy,
-                            tile_mesh_path=save_mesh_path)
-    fusion_time = time.time() - t0
-
-    LOGGER.info(
-        f"Fusion: {fusion_time}"
-    )
+                                        save_mesh_path=pc.ELASTIC_MESH_NAME)
+    cloud_utils.write_to_bucket_gcs(pc.params['home_bucket'],
+                                    f'SOFIMA_{pc.dataset_name}/{pc.ELASTIC_MESH_NAME}',
+                                    pc.ELASTIC_MESH_NAME)
+    elastic_reg_time = time.time() - t0
+    LOGGER.info(f'Elastic Registration Time: {elastic_reg_time}')
 
 if __name__ == '__main__': 
     main()

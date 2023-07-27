@@ -45,9 +45,55 @@ class SyncAdapter:
   def dtype(self):
     return "uint16"
 
-def main(): 
-    # client = Client(LocalCluster(processes=True, threads_per_worker=1))
+def run_multiscale(input_bucket: str, 
+                   input_name: str, 
+                   output_gcs_bucket: str,  
+                   output_name: str, 
+                   voxel_sizes_zyx: tuple): 
+    
+    image = zarr_io.open_zarr_gcs(input_bucket, input_name)
+    arr = dask.array.from_array(SyncAdapter(image))
+    arr = arr.rechunk((1, 1, 128, 128, 128))
+    arr = ensure_array_5d(arr)
+    LOGGER.info(f"input array: {arr}")
+    LOGGER.info(f"input array size: {arr.nbytes / 2 ** 20} MiB")
+    
+    output_path = f"gs://{output_gcs_bucket}/{output_name}"
+    group = zarr.open_group(output_path, mode='w')
 
+    scale_factors = (2, 2, 2) 
+    scale_factors = ensure_shape_5d(scale_factors)
+
+    n_levels = 5
+    compressor = None
+
+    block_shape = ensure_shape_5d(BlockedArrayWriter.get_block_shape(arr))
+    LOGGER.info(f"block shape: {block_shape}")
+
+    # Actual Processing
+    write_ome_ngff_metadata(
+            group,
+            arr,
+            output_name,
+            n_levels,
+            scale_factors[2:],
+            voxel_sizes_zyx,
+            origin=None,
+        )
+
+    t0 = time.time()
+    store_array(arr, group, "0", block_shape, compressor)
+    pyramid = downsample_and_store(
+        arr, group, n_levels, scale_factors, block_shape, compressor
+    )
+    write_time = time.time() - t0
+
+    LOGGER.info(
+        f"Finished writing tile.\n"
+        f"Took {write_time}s. {_get_bytes(pyramid) / write_time / (1024 ** 2)} MiB/s"
+    )
+
+def main(): 
     # Format Input Zarr -> Dask Array
     input_bucket = 'sofima-test-bucket' 
     # input_name = 'fused_diSPIM_647403_2022-11-21_23-12-18_CH_405_CAM_1'
@@ -105,4 +151,10 @@ def main():
     )
 
 if __name__ == '__main__':
+    # run_multiscale(input_bucket='sofima-test-bucket', 
+    #                input_name='fused_image_name.zarr',
+    #                output_gcs_bucket='sofima-test-bucket', 
+    #                output_name='multiscale_fused_X.zarr', 
+    #                voxel_sizes_zyx=(0, 0, 0))  # Inside zd
+
     main()
