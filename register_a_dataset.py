@@ -14,6 +14,10 @@ def main():
     LOGGER = logging.getLogger(__name__)
     LOGGER.setLevel(logging.INFO)
 
+    file_handler = logging.FileHandler('registration_log_file.txt')
+    file_handler.setLevel(logging.INFO)
+    LOGGER.addHandler(file_handler)
+
     pc = PipelineConfiguration()
     cloud_storage = zarr_io.CloudStorage.S3 
     bucket = pc.params['input_bucket']
@@ -30,8 +34,7 @@ def main():
     LOGGER.info(f'Registering Dataset: {pc.dataset_name}')
 
     # Run Coarse Registration
-    pc.COARSE_MESH_NAME = 'inverted_offset_coarse_mesh.npz'
-
+    logging.info(f'Starting Coarse Registration')
     t0 = time.time()
     zarr_stitcher = zarr_register_and_fuse_3d.ZarrStitcher(zd)
     log_cx, log_cy, log_coarse_mesh, sofima_cx, sofima_cy, sofima_coarse_mesh = zarr_stitcher.run_coarse_registration()
@@ -46,6 +49,7 @@ def main():
     LOGGER.info(f'Coarse Registration Time: {coarse_reg_time}')
 
     # Verify Coarse Registration Looks Good
+    logging.info(f'Creating Neuroglancer Link')
     zd_list = [zd]
     remaining_channels = list(set(zd.channels) - set([registration_channel]))
     for channel in remaining_channels: 
@@ -57,6 +61,7 @@ def main():
     ng_utils.ng_link_multi_channel(zd_list,
                                    log_coarse_mesh * 4)
 
+    # NEVER INTENDING TO RUN THIS:
     # Run Elastic Registration
     # t0 = time.time()
     # zarr_stitcher.run_fine_registration(cx, 
@@ -69,16 +74,6 @@ def main():
     #                                 pc.ELASTIC_MESH_NAME)
     # elastic_reg_time = time.time() - t0
     # LOGGER.info(f'Elastic Registration Time: {elastic_reg_time}')
-
-    # zarr_stitcher.run_fusion_on_coarse_mesh(zarr_io.CloudStorage.GCS,
-    #                                         pc.params['home_bucket'],
-    #                                         'fused_inverted_offsets.zarr',
-    #                                         2,
-    #                                         sofima_cx, 
-    #                                         sofima_cy,
-    #                                         sofima_coarse_mesh, 
-    #                                         save_mesh_path='inverted_offsets_our_fine_mesh.npz')
-
 
 if __name__ == '__main__': 
     main()
