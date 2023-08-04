@@ -3,7 +3,6 @@ from ng_link import NgState, link_utils
 
 from sofima.zarr import zarr_io
 
-
 def _zyx_vector_to_3x4(zyx_vector: np.ndarray):
     output = np.zeros((3, 4))
     
@@ -45,49 +44,49 @@ def apply_deskewing(matrix_3x4: np.ndarray, theta: float = -45) -> np.ndarray:
     return matrix_3x4
 
 def ng_link_single_channel(zd: zarr_io.ZarrDataset,
-                        coarse_mesh: np.ndarray,
+                        coarse_mesh_to_scale: np.ndarray,
                         max_dr: int = 200,
                         opacity: float = 1.0, 
                         blend: str = "default",
                         output_json_path: str = ".") -> None:
     ng_link_multi_channel([zd],
-                          coarse_mesh, 
+                          coarse_mesh_to_scale, 
                           max_dr, 
                           opacity, 
                           blend, 
                           output_json_path)
 
 def ng_link_multi_channel(zd_list: list[zarr_io.ZarrDataset],
-                        coarse_mesh: np.ndarray,
+                        coarse_mesh_to_scale: np.ndarray, 
                         max_dr: int = 200,
                         opacity: float = 1.0, 
                         blend: str = "default",
                         output_json_path: str = ".") -> None:
     """
     zarr_dataset: Zarr Dataset with tile_layout, tile_size, etc. info inside
-    coarse_mesh: Output of SOFIMA coarse registration
+    coarse_mesh: Output of SOFIMA coarse registration, tile-level flow field
+        represented in unified coordinate system. 
     """
-    zd = zd_list[0]
-    assert coarse_mesh.shape[2:] == zd.tile_layout.shape
     
-    # Simply add coarse mesh offset to every nominal tile-sized position. 
-    mesh_y, mesh_x = coarse_mesh.shape[2:]
-    tx, ty, tz = zd.tile_size_xyz
-    coarse_mesh[np.isnan(coarse_mesh)] = 0
-
     # Following neuroglancer convention: 
     # o -- x
     # |
     # y
-    # Attach resolution to abstract coarse mesh
+
+    # Coarse mesh contains the absolute tile positions
+    # coarse_mesh = stitch_rigid.optimize_coarse_mesh(cx_to_scale, 
+    #                                                 cy_to_scale, 
+    #                                                 mesh_fn=stitch_rigid.elastic_tile_mesh_3d)
+    coarse_mesh = coarse_mesh_to_scale
+
+    mesh_y, mesh_x = coarse_mesh.shape[2:]
     tile_positions_xyz = np.zeros((3, mesh_y, mesh_x))
     for yi, y in enumerate(range(mesh_y)):
         for xi, x in enumerate(range(mesh_x)):
-            tile_positions_xyz[:, y, x] = np.array([(xi * tx), 0, 0]) + \
-                                         np.array([0, (yi * ty), 0]) + \
-                                         coarse_mesh[:, 0, y, x]
+            tile_positions_xyz[:, y, x] = coarse_mesh[:, 0, y, x]
 
     # Generate input config
+    zd = zd_list[0]
     layers = []  # Nueroglancer Tabs
     input_config = {
         "dimensions": {
